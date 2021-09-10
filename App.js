@@ -1,16 +1,31 @@
 import React, { useState } from 'react';
 import { StyleSheet, Alert, View } from 'react-native';
+import * as Font from 'expo-font'
+import AppLoading from 'expo-app-loading'
+
 import { Navbar } from './src/components/Navbar'
 import { MainScreen } from "./src/screens/MainScreen";
 import { ToDoScreen } from "./src/screens/ToDoScreen";
 
+async function loadApplication() {
+    await Font.loadAsync({
+        'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf'),
+        'roboto-bold': require('./assets/fonts/Roboto-Bold.ttf')
+
+    })
+}
+
 export default function App() {
     const [todoId, setTodoId] = useState(null);
+    const [isReady, setIsReady] = useState(false);
     const [todos, setTodos] = useState([
-        {id:'1', title: 'Выучить React Native'},
-        {id:'2', title: 'Написать приложение'},
+        { id: '1', title: 'dsgfdgfd' },
+        { id: '2', title: 'Написать приложение' },
     ]);
-
+    if (!isReady) {
+        return <AppLoading startAsync={loadApplication} onError={err => console.log(err)}
+                           onFinish={() => setIsReady(true)}/>
+    }
 
     const addTodo = (title) => {
         setTodos(prev => [...prev, {
@@ -19,9 +34,9 @@ export default function App() {
         }]);
     };
 
-    const updateTodo = (id,title) => {
+    const updateTodo = (id, title) => {
         setTodos(old => old.map(todo => {
-            if(todo.id === id){
+            if (todo.id === id) {
                 todo.title = title
             }
             return todo;
@@ -52,8 +67,9 @@ export default function App() {
     };
     let content = (<MainScreen todos={todos} addTodo={addTodo} removeTodo={removeTodo} openTodo={setTodoId}/>);
     if (todoId) {
-        const selectedTodo = todos.find(todo => todo.id ===todoId);
-        content = <ToDoScreen onRemove={removeTodo} onSave={updateTodo} todo={selectedTodo} goBack={() => setTodoId(null)}/>
+        const selectedTodo = todos.find(todo => todo.id === todoId);
+        content =
+            <ToDoScreen onRemove={removeTodo} onSave={updateTodo} todo={selectedTodo} goBack={() => setTodoId(null)}/>
     }
     return (
         <View>
